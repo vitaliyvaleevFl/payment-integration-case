@@ -84,3 +84,35 @@
   "processed_at": "2026-07-19T11:03:00Z"
 }
 ```
+## 4. Проектирование базы данных (SQL)
+
+Для поддержки процесса онлайн-оплаты в базе данных интернет-магазина используются две основные таблицы: `orders` (заказы) и `payments` (транзакции). Связь между ними реализована как один-ко-многим (у одного заказа может быть несколько попыток оплаты, если первая завершилась ошибкой).
+
+### 4.1 Структура таблиц (DDL)
+
+```sql
+-- Таблица заказов
+CREATE TABLE orders (
+    order_id VARCHAR(50) PRIMARY KEY,     -- Уникальный номер заказа (например, ORD-2026-9912)
+    amount DECIMAL(10, 2) NOT NULL,       -- Сумма заказа
+    currency VARCHAR(3) DEFAULT 'RUB',    -- Валюта
+    status VARCHAR(20) NOT NULL,          -- Статус заказа ('PENDING', 'PAID', 'FAILED')
+    customer_email VARCHAR(100),          -- Email клиента
+    created_at TIMESTAMP DEFAULT NOW(),   -- Дата создания заказа
+    updated_at TIMESTAMP DEFAULT NOW()    -- Дата обновления заказа
+);
+
+-- Таблица платежей (транзакций)
+CREATE TABLE payments (
+    payment_id SERIAL PRIMARY KEY,        -- Внутренний ID транзакции
+    bill_id VARCHAR(100) UNIQUE,          -- ID счета из платежного шлюза (например, bill_abc123xyz)
+    order_id VARCHAR(50) REFERENCES orders(order_id), -- Связь с таблицей заказов
+    amount DECIMAL(10, 2) NOT NULL,       -- Сумма платежа
+    status VARCHAR(20) NOT NULL,          -- Статус платежа ('CREATED', 'SUCCESS', 'DECLINED')
+    payment_type VARCHAR(20),             -- Способ оплаты (CARD, SBP и т.д.)
+    error_code VARCHAR(50),               -- Код ошибки при неудаче
+    error_message TEXT,                   -- Текст ошибки для логов
+    created_at TIMESTAMP DEFAULT NOW(),   -- Время инициации платежа
+    processed_at TIMESTAMP                -- Время финальной обработки банком
+);
+```
