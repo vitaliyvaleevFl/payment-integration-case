@@ -68,3 +68,19 @@
   "processed_at": "2026-07-19T11:02:15Z"
 }
 ```
+
+**Тело уведомления при ошибке (Webhook DECLINED):**
+```json
+{
+  "event": "payment.failed",
+  "bill_id": "bill_abc123xyz",
+  "order_id": "ORD-2026-9912",
+  "amount": 49990.00,
+  "status": "DECLINED",
+  "error": {
+    "code": "INSUFFICIENT_FUNDS",
+    "message": "Недостаточно средств на карте покупателя"
+  },
+  "processed_at": "2026-07-19T11:03:00Z"
+}
+```
