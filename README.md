@@ -15,32 +15,5 @@
 ### 3.1 Диаграмма последовательности (UML Sequence Diagram)
 *Ниже представлена техническая диаграмма взаимодействия систем во времени с указанием REST API методов и эндпоинтов:*
 
-```mermaid
-%%{init: {'theme': 'neutral', 'themeVariables': { 'actorBkg':'#f9f9f9', 'actorBorder':'#333' }}}%%
-sequenceDiagram
-    autonumber
-    actor User as Покупатель
-    participant Front as Фронтенд (Сайт)
-    participant Back as Бэкенд
-    participant Bank as Платежный Шлюз
+![Диаграмма последовательности UML](uml_sequence_diagram.png)
 
-    User->>Front: Клик "Оплатить заказ"
-    Front->>Back: POST /api/v1/orders/{id}/pay
-    Note over Back: Статус: "Ожидает оплаты"
-    Back->>Bank: POST /v1/bills (Создание счета)
-    Bank-->>Back: bill_id, payment_url
-    Back-->>Front: Передача payment_url
-    Front->>User: Редирект на форму ввода карты
-    User->>Bank: Ввод реквизитов + 3DS
-    
-    alt Успешная оплата
-        Bank-->>Back: Webhook SUCCESS (POST /callback)
-        Back->>Back: Статус БД: "Оплачен"
-        Bank-->>Front: Редирект на экран успеха
-        Front->>User: Экран "Оплата успешна!"
-    else Ошибка / Нет денег
-        Bank-->>Back: Webhook DECLINED (POST /callback)
-        Back->>Back: Статус БД: "Ошибка оплаты"
-        Bank-->>Front: Редирект в корзину
-        Front->>User: Сообщение "Нет средств"
-    end
