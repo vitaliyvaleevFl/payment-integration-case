@@ -26,7 +26,7 @@
 **Тело запроса (Request):**
 ```json
 {
-  "amount": 49990.00,
+  "amount": 9990.00,
   "currency": "RUB",
   "order_id": "ORD-2026-9912",
   "description": "Оплата заказа №9912 в интернет-магазине",
@@ -42,7 +42,7 @@
   "bill_id": "bill_abc123xyz",
   "status": "CREATED",
   "payment_url": "[https://securepay.bank.ru/pay/bill_abc123xyz](https://securepay.bank.ru/pay/bill_abc123xyz)",
-  "created_at": "2026-07-19T11:00:00Z"
+  "created_at": "2026-01-01T11:00:00Z"
 }
 ```
 
@@ -56,10 +56,10 @@
   "event": "payment.success",
   "bill_id": "bill_abc123xyz",
   "order_id": "ORD-2026-9912",
-  "amount": 49990.00,
+  "amount": 9990.00,
   "status": "SUCCESS",
   "payment_type": "CARD",
-  "processed_at": "2026-07-19T11:02:15Z"
+  "processed_at": "2026-01-01T11:00:00Z"
 }
 ```
 
@@ -69,13 +69,13 @@
   "event": "payment.failed",
   "bill_id": "bill_abc123xyz",
   "order_id": "ORD-2026-9912",
-  "amount": 49990.00,
+  "amount": 9990.00,
   "status": "DECLINED",
   "error": {
     "code": "INSUFFICIENT_FUNDS",
     "message": "Недостаточно средств на карте покупателя"
   },
-  "processed_at": "2026-07-19T11:03:00Z"
+  "processed_at": "2026-01-01T11:03:00Z"
 }
 ```
 
@@ -121,7 +121,7 @@ CREATE TABLE payments (
 UPDATE payments 
 SET status = 'SUCCESS', 
     payment_type = 'CARD',
-    processed_at = '2026-07-19 11:02:15'
+    processed_at = '2026-01-01 11:03:00'
 WHERE bill_id = 'bill_abc123xyz';
 
 -- Шаг Б: Переводим сам заказ в статус "Оплачен"
@@ -139,6 +139,6 @@ UPDATE payments
 SET status = 'DECLINED',
     error_code = 'INSUFFICIENT_FUNDS',
     error_message = 'Недостаточно средств на карте покупателя',
-    processed_at = '2026-07-19 11:03:00'
+    processed_at = '2026-01-01 11:03:00'
 WHERE bill_id = 'bill_abc123xyz';
 ```
