@@ -17,3 +17,35 @@
 
 ![Диаграмма последовательности UML](uml_sequence_diagram.png)
 
+## 3. Техническое проектирование интеграции
+
+### 3.1 Диаграмма последовательности (UML Sequence Diagram)
+*Ниже представлена техническая диаграмма взаимодействия систем во времени с указанием REST API методов и эндпоинтов:*
+
+![Диаграмма последовательности UML](uml_sequence_diagram.png)
+
+### 3.2 Примеры API запросов и ответов (JSON)
+
+#### 1. Создание счета (Шаг 3: Бэкенд -> Банк)
+* **Метод:** POST
+* **Эндпоинт:** `/v1/bills`
+
+**Тело запроса (Request):**
+```json
+{
+  "amount": 49990.00,
+  "currency": "RUB",
+  "order_id": "ORD-2026-9912",
+  "description": "Оплата заказа №9912 в интернет-магазине",
+  "customer": {
+    "email": "client@example.com",
+    "phone": "+79991112233"
+  }
+}
+
+{
+  "bill_id": "bill_abc123xyz",
+  "status": "CREATED",
+  "payment_url": "[https://securepay.bank.ru/pay/bill_abc123xyz](https://securepay.bank.ru/pay/bill_abc123xyz)",
+  "created_at": "2026-07-19T11:00:00Z"
+}
