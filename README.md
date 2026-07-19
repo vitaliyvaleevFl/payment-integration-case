@@ -16,31 +16,31 @@
 *Ниже представлена техническая диаграмма взаимодействия систем во времени с указанием REST API методов и эндпоинтов:*
 
 ```mermaid
+%%{init: {'theme': 'neutral', 'themeVariables': { 'actorBkg':'#f9f9f9', 'actorBorder':'#333' }}}%%
 sequenceDiagram
     autonumber
-    actor User as Покупатель (Клиент)
+    actor User as Покупатель
     participant Front as Фронтенд (Сайт)
-    participant Back as Бэкенд Магазина
+    participant Back as Бэкенд
     participant Bank as Платежный Шлюз
 
-    User->>Front: Нажимает кнопку "Оплатить заказ"
+    User->>Front: Клик "Оплатить заказ"
     Front->>Back: POST /api/v1/orders/{id}/pay
-    Note over Back: Изменение статуса заказа на "Ожидает оплаты"
+    Note over Back: Статус: "Ожидает оплаты"
     Back->>Bank: POST /v1/bills (Создание счета)
-    Bank-->>Back: Возврат bill_id и payment_url (Ссылка на оплату)
-    Back-->>Front: Передача ссылки payment_url
-    Front->>User: Перенаправление на форму ввода карты
-    User->>Bank: Ввод реквизитов и подтверждение 3DS
+    Bank-->>Back: bill_id, payment_url
+    Back-->>Front: Передача payment_url
+    Front->>User: Редирект на форму ввода карты
+    User->>Bank: Ввод реквизитов + 3DS
     
     alt Успешная оплата
-        Bank-->>Back: Webhook (POST /api/v1/payment/callback) c результатом "SUCCESS"
-        Back->>Back: Изменение статуса в БД на "Оплачен"
-        Bank-->>Front: Редирект пользователя на страницу успеха
-        Front->>User: Отображение экрана "Оплата успешна!"
-    else Ошибка оплаты / Нет денег
-        Bank-->>Back: Webhook (POST /api/v1/payment/callback) c результатом "DECLINED"
-        Back->>Back: Изменение статуса в БД на "Ошибка оплаты"
-        Bank-->>Front: Редирект пользователя обратно в корзину
-        Front->>User: Отображение сообщения "Недостаточно средств"
+        Bank-->>Back: Webhook SUCCESS (POST /callback)
+        Back->>Back: Статус БД: "Оплачен"
+        Bank-->>Front: Редирект на экран успеха
+        Front->>User: Экран "Оплата успешна!"
+    else Ошибка / Нет денег
+        Bank-->>Back: Webhook DECLINED (POST /callback)
+        Back->>Back: Статус БД: "Ошибка оплаты"
+        Bank-->>Front: Редирект в корзину
+        Front->>User: Сообщение "Нет средств"
     end
-```
