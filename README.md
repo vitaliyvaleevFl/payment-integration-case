@@ -9,3 +9,38 @@
 *Ниже представлена целевая схема процесса онлайн-оплаты заказа на сайте:*
 
 ![Целевая схема BPMN 2.0](bpmn_process.png)
+
+## 3. Техническое проектирование интеграции
+
+### 3.1 Диаграмма последовательности (UML Sequence Diagram)
+*Ниже представлена техническая диаграмма взаимодействия систем во времени с указанием REST API методов и эндпоинтов:*
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Покупатель (Клиент)
+    participant Front as Фронтенд (Сайт)
+    participant Back as Бэкенд Магазина
+    participant Bank as Платежный Шлюз
+
+    User->>Front: Нажимает кнопку "Оплатить заказ"
+    Front->>Back: POST /api/v1/orders/{id}/pay
+    Note over Back: Изменение статуса заказа на "Ожидает оплаты"
+    Back->>Bank: POST /v1/bills (Создание счета)
+    Bank-->>Back: Возврат bill_id и payment_url (Ссылка на оплату)
+    Back-->>Front: Передача ссылки payment_url
+    Front->>User: Перенаправление на форму ввода карты
+    User->>Bank: Ввод реквизитов и подтверждение 3DS
+    
+    alt Успешная оплата
+        Bank-->>Back: Webhook (POST /api/v1/payment/callback) c результатом "SUCCESS"
+        Back->>Back: Изменение статуса в БД на "Оплачен"
+        Bank-->>Front: Редирект пользователя на страницу успеха
+        Front->>User: Отображение экрана "Оплата успешна!"
+    else Ошибка оплаты / Нет денег
+        Bank-->>Back: Webhook (POST /api/v1/payment/callback) c результатом "DECLINED"
+        Back->>Back: Изменение статуса в БД на "Ошибка оплаты"
+        Bank-->>Front: Редирект пользователя обратно в корзину
+        Front->>User: Отображение сообщения "Недостаточно средств"
+    end
+```
