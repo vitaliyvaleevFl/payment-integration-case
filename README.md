@@ -116,3 +116,4 @@ CREATE TABLE payments (
     processed_at TIMESTAMP                -- Время финальной обработки банком
 );
 ```
+### 4.2 Основные SQL-запросы (DML)
