@@ -43,9 +43,16 @@
   }
 }
 
+**Ответ банка (Response 201 Created):**
+```json
+
 {
   "bill_id": "bill_abc123xyz",
   "status": "CREATED",
   "payment_url": "[https://securepay.bank.ru/pay/bill_abc123xyz](https://securepay.bank.ru/pay/bill_abc123xyz)",
   "created_at": "2026-07-19T11:00:00Z"
 }
+
+**Ответ банка (Response 201 Created):**
+* **Контекст:**
+```json
